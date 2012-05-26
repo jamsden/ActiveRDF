@@ -4,7 +4,7 @@
 
 require 'test/unit'
 require 'active_rdf'
-require 'active_rdf/queryengine/ntriples_parser'
+require 'active_rdf/query/ntriples_parser'
 require 'test_helper'
 
 class TestNTriplesParser < Test::Unit::TestCase

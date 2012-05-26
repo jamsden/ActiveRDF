@@ -1,4 +1,4 @@
-require 'active_rdf/federation/connection_pool'
+require 'active_rdf/storage/connection_pool'
 
 include ActiveRdfBenchmark
 
@@ -79,7 +79,8 @@ module ActiveRDF
         end
 
         # count
-        return results.flatten.inject{|mem,c| mem + c} if q.count?
+        # FIXME: return results.flatten.inject{|mem,c| mem + c} if q.count?
+        return results.size if q.count?
 
         # filter the empty results
         results.reject {|ary| ary.empty? }

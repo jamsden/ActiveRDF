@@ -11,16 +11,16 @@ require 'active_rdf/active_rdf_log'
 
 
 # load standard classes that need to be loaded at startup
-require 'active_rdf/objectmanager/namespace'
-require 'active_rdf/objectmanager/resource'
-require 'active_rdf/objectmanager/resource_query'
-require 'active_rdf/objectmanager/property'
-require 'active_rdf/objectmanager/property_lookup'
-require 'active_rdf/objectmanager/bnode'
-require 'active_rdf/objectmanager/literal'
-require 'active_rdf/federation/connection_pool'
-require 'active_rdf/queryengine/query'
-require 'active_rdf/federation/active_rdf_adapter'
+require 'active_rdf/model/namespace'
+require 'active_rdf/model/resource'
+require 'active_rdf/model/resource_query'
+require 'active_rdf/model/property'
+require 'active_rdf/model/property_lookup'
+require 'active_rdf/model/bnode'
+require 'active_rdf/model/literal'
+require 'active_rdf/storage/connection_pool'
+require 'active_rdf/query/query'
+require 'active_rdf/storage/active_rdf_adapter'
 
 
 ActiveRdfLogger::log_info "ActiveRDF loaded, logging level: #{ActiveRdfLogger::logger.level}"

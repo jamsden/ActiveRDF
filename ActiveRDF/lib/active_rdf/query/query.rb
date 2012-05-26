@@ -1,4 +1,4 @@
-require 'active_rdf/federation/federation_manager'
+require 'active_rdf/storage/federation_manager'
 
 # Represents a query on a datasource, abstract representation of SPARQL
 # features. Query is passed to federation manager or adapter for execution on
@@ -6,7 +6,7 @@ require 'active_rdf/federation/federation_manager'
 # Query.new.select(:s).where(:s,:p,:o).
 module ActiveRDF
   class Query
-    attr_reader :select_clauses, :where_clauses, :filter_clauses, :sort_clauses, :limits, :offsets, :keywords
+    attr_reader :select_clauses, :where_clauses, :filter_clauses, :sort_clauses, :limits, :offsets, :keywords, :resource_type
 
     bool_accessor :distinct, :ask, :select, :count, :keyword, :all_types
 
@@ -24,7 +24,8 @@ module ActiveRDF
       @reasoning = nil
       @all_types = false
       @nil_clause_idx = -1
-    set_resource_class(resource_type)
+    # FIXME: set_resource_class(resource_type)
+      @resource_type = resource_type
     end
 
     def initialize_copy(orig)
@@ -228,7 +229,7 @@ module ActiveRDF
 
     # Returns SPARQL serialisation of query
     def to_sp
-    require 'active_rdf/queryengine/query2sparql' unless(defined?(Query2SPARQL))
+    require 'active_rdf/query/query2sparql' unless(defined?(Query2SPARQL))
       Query2SPARQL.translate(self)
     end
 
