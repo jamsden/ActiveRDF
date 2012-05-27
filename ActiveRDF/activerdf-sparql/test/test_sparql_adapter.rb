@@ -5,7 +5,7 @@
 require "rubygems"
 require 'active_rdf'
 require 'test/unit'
-require 'federation/federation_manager'
+require 'federation/federated_store'
 require 'query/query'
 
 

@@ -6,35 +6,35 @@ $activerdf_internal_reasoning = false
 # If true, disable datatype support (Default: false)
 $activerdf_without_datatype = false
 
-require 'active_rdf/active_rdf_helpers'
-require 'active_rdf/active_rdf_log'
+require 'active_rdf/helpers'
+require 'active_rdf/logger'
 
 
 # load standard classes that need to be loaded at startup
-require 'active_rdf/model/namespace'
+require 'active_rdf/namespace'
 require 'active_rdf/model/resource'
 require 'active_rdf/model/resource_query'
 require 'active_rdf/model/property'
 require 'active_rdf/model/property_lookup'
-require 'active_rdf/model/bnode'
-require 'active_rdf/model/literal'
+require 'active_rdf/bnode'
+require 'active_rdf/literal'
 require 'active_rdf/storage/connection_pool'
 require 'active_rdf/query/query'
-require 'active_rdf/storage/active_rdf_adapter'
+require 'active_rdf/storage/store'
 
 
 ActiveRdfLogger::log_info "ActiveRDF loaded, logging level: #{ActiveRdfLogger::logger.level}"
 
-#begin
-#  require 'activerdf_rdflite/rdflite'
-#rescue Exception => e
-#  # require 'debug'
-#  # debugger
-#  # libs = $:
-#  require 'pp'
-#  pp $:
-#  raise e
-#end
+=begin
+  require 'activerdf_rdflite/rdflite'
+rescue Exception => e
+  # require 'debug'
+  # debugger
+  # libs = $:
+  require 'pp'
+  pp $:
+  raise e
+=end
 
 #begin
 #  ActiveRDF::ConnectionPool.load_adapter(:rdflite)

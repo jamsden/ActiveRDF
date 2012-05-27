@@ -1,5 +1,5 @@
 require 'active_rdf/model/object_manager'
-require 'active_rdf/model/namespace'
+require 'active_rdf/namespace'
 require 'active_rdf/query/query'
 
 module RDFS

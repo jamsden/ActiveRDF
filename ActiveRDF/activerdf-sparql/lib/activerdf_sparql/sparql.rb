@@ -68,7 +68,7 @@ module ActiveRDF
          end
       end
 
-    result = execute_sparql_query(qs, query.resource_class, header(query), &block)
+    result = execute_sparql_query(qs, query.resource_type, header(query), &block)
       add_to_cache(qs, result) if @caching
       result = [] if result == "timeout"
       return result

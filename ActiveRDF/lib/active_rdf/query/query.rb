@@ -1,4 +1,4 @@
-require 'active_rdf/storage/federation_manager'
+require 'active_rdf/storage/federated_store'
 
 # Represents a query on a datasource, abstract representation of SPARQL
 # features. Query is passed to federation manager or adapter for execution on
