@@ -80,7 +80,7 @@ module ActiveRDF
 
         # count
         # FIXME: return results.flatten.inject{|mem,c| mem + c} if q.count?
-        return results.size if q.count?
+        return results.flatten.size if q.count?
 
         # filter the empty results
         results.reject {|ary| ary.empty? }

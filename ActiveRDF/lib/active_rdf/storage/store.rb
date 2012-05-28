@@ -4,7 +4,7 @@ require 'active_rdf/query/query2sparql'
 module ActiveRDF
   class ActiveRdfAdapter
     # indicate if adapter can read and write
-    bool_accessor :enabled, :reads, :writes, :new, :contexts, :enabled
+    bool_accessor :enabled, :reads, :writes, :new, :contexts
 
     # The following options are accepted
     #  :write => true | false       # adapter supports writing. default true
