@@ -1,6 +1,6 @@
-require 'active_rdf/objectmanager/object_manager'
-require 'active_rdf/objectmanager/namespace'
-require 'active_rdf/queryengine/query'
+require 'active_rdf/model/object_manager'
+require 'active_rdf/namespace'
+require 'active_rdf/query/query'
 
 module RDFS
   # Represents an RDF resource and manages manipulations of that resource,
@@ -121,7 +121,7 @@ module RDFS
     end
 
     def new_record?
-      ActiveRDF::Query.new.count(:p).where(self,:p,:o).execute == 0
+      !ActiveRDF::Query.new.ask.where(self,:p,:o).execute
     end
 
     # saves instance into datastore

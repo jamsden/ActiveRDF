@@ -1,7 +1,7 @@
 require 'open-uri'
 require 'cgi'
 require 'rexml/document'
-require 'active_rdf/queryengine/query2sparql'
+require 'active_rdf/query/query2sparql'
 require 'activerdf_sparql/sparql_result_parser'
 
 module ActiveRDF
@@ -166,20 +166,22 @@ module ActiveRDF
 
     # parse json query results into array. resource_type is the type to be used
     # for "resource" objects.
-    def parse_json(s, resource_type)
+    def parse_json(response_str, resource_type)
         require 'json'
 
-        parsed_object = JSON.parse(s)
-        return [] if parsed_object.nil?
+        response = JSON.parse(response_str)
+        return [] if response.nil?
+
+        return [truefalse(response['boolean'])] if response.has_key?('boolean')
 
         results = []
-        vars = parsed_object['head']['vars']
-        objects = parsed_object['results']['bindings']
+        vars = response['head']['vars']
+        bindings = response['results']['bindings']
 
-        objects.each do |obj|
+        bindings.each do |binding|
           result = []
-          vars.each do |v|
-          result << create_node( obj[v]['type'], obj[v]['value'], resource_type)
+          vars.each do |var|
+            result << create_node( binding[var]['type'], binding[var]['value'], resource_type)
           end
           results << result
         end
@@ -190,9 +192,9 @@ module ActiveRDF
     # parse xml stream result into array
     def parse_xml(s, resource_type)
       parser = SparqlResultParser.new(resource_type)
-        REXML::Document.parse_stream(s, parser)
-        parser.result
-      end
+      REXML::Document.parse_stream(s, parser)
+      parser.result
+    end
 
     # create ruby objects for each RDF node. resource_type is the class to be used
     # for "resource" objects.

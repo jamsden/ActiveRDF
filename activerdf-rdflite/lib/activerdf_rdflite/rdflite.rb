@@ -3,8 +3,8 @@
 # License:: LGPL
 
 require 'sqlite3'
-require 'active_rdf/federation/connection_pool'
-require 'active_rdf/queryengine/ntriples_parser'
+require 'active_rdf/storage/connection_pool'
+require 'active_rdf/ntriples_parser'
 require 'uuidtools'
 require 'open-uri'
 require 'mime/types'
@@ -210,7 +210,7 @@ module ActiveRDF
 
       # if ASK query, we check whether we received a positive result count
       if query.ask?
-        return [[results[0][0].to_i > 0]]
+        return [results[0][0].to_i > 0]
       elsif query.count?
         return [[results[0][0].to_i]]
       else
