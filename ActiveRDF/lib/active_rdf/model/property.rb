@@ -259,18 +259,6 @@ module RDF
       "#<RDF::Property #{abbr} [#{to_a.collect{|obj| obj.inspect}.join(", ")}]>"
     end
     
-    # Returns the string representation of this property, either nothing, a single value or a collection of values
-    def to_s      values = to_a
-      if values == nil then
-        ""
-      elsif values.size == 1 then
-        "#{values[0]}"
-      else
-        "[#{values.collect{|obj| obj.inspect}.join(", ")}]"
-      end
-    end
-
-
     # Returns a new array populated with the keys to the values
     def keys
       collect{|value| get_key(value)}
@@ -344,6 +332,11 @@ module RDF
       hash
     end
 
+    # Returns the string representation of this property, either nothing, a single value or a collection of values
+    def to_s
+      to_a.join(",")
+    end
+    
     # Return an array containing the values for the given keys.
     def values_at(*args)
       args.collect{|md5| self[md5]}
