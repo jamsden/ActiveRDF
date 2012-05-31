@@ -4,6 +4,7 @@ require 'cgi'
 require 'rexml/document'
 require 'active_rdf/query/query2sparql'
 require 'activerdf_sparql/sparql_result_parser'
+require 'active_rdf/storage/federated_store'
 
 module ActiveRDF
   # SPARQL adapter
@@ -28,10 +29,8 @@ module ActiveRDF
     # * :timeout => timeout in seconds to wait for endpoint response
     # * :auth => [user, pass]
     def initialize(params = {})
-      super()
-      @reads = true
-      @writes = false
-
+      super(params)
+ 
       @url = params[:url] || ''
       @caching = params[:caching] || false
       @timeout = params[:timeout] || 50
@@ -41,7 +40,7 @@ module ActiveRDF
       raise ActiveRdfError, "Result format unsupported" unless [:xml, :json, :sparql_xml].include? @result_format
 
       @engine = params[:engine] || :virtuoso
-      raise ActiveRdfError, "SPARQL engine unsupported" unless [:yars2, :sesame2, :joseki, :virtuoso].include? @engine
+      raise ActiveRdfError, "SPARQL engine unsupported" unless [:yars2, :sesame2, :joseki, :virtuoso, :_4store].include? @engine
 
       @request_method = params[:request_method] || :get
       raise ActiveRdfError, "Request method unsupported" unless [:get,:post].include? @request_method
@@ -68,7 +67,7 @@ module ActiveRDF
          end
       end
 
-    result = execute_sparql_query(qs, query.resource_type, header(query), &block)
+    result = execute_sparql_query(qs, query.resource_class, header(query), &block)
       add_to_cache(qs, result) if @caching
       result = [] if result == "timeout"
       return result
@@ -125,6 +124,61 @@ module ActiveRDF
     def close
       ConnectionPool.remove_data_source(self)
     end
+
+    # deletes triple(s,p,o,c) from datastore
+    # symbol parameters match anything: delete(:s,:p,:o) will delete all triples
+    # you can specify a context to limit deletion to that context:
+    # delete(:s,:p,:o, 'http://context') will delete all triples with that context
+    def delete(s, p, o=nil)
+      where_clauses = []
+      conditions = []
+
+      [s,p,o].each_with_index do |r,i|
+        unless r.nil? or check_type(r, Symbol)
+          where_clauses << "#{SPOC[i]} = ?"
+          conditions << r.to_literal_s
+        end
+      end
+
+      # construct delete string
+      ds = 'delete from triple'
+      ds << " where #{where_clauses.join(' and ')}" unless where_clauses.empty?
+
+      # execute delete string with possible deletion conditions (for each
+      # non-empty where clause)
+      ActiveRdfLogger::log_debug(self) { "Deleting #{[s,p,o,c].join(' ')}" }
+      @db.execute(ds, *conditions)
+
+      # delete literal from ferret index
+      @ferret.search_each("subject:\"#{s}\", object:\"#{o}\"") do |idx, score|
+        @ferret.delete(idx)
+      end if keyword_search?
+
+      @db
+    end
+
+    # adds triple(s,p,o) to a datasource using SPARQL update
+    # s,p must be resources, o can be primitive data or resource
+    def add(s,p,o)
+      # check illegal input
+      raise(ActiveRdfError, "adding non-resource #{s} while adding (#{s},#{p},#{o})") unless s.respond_to?(:uri)
+      raise(ActiveRdfError, "adding non-resource #{p} while adding (#{s},#{p},#{o})") unless p.respond_to?(:uri)
+      raise(ActiveRdfError, "SPARQL engine #{@engine} does not support writes") unless @writes
+      
+      # insert triple into database
+      qs = "INSERT DATA {#{s.to_literal_s} #{p.to_literal_s} #{o.to_literal_s}.}"
+      result =  Net::HTTP.post_form(URI.parse(@url),{'update'=>qs})
+puts "#{@url}=>  #{result.inspect} => #{qs}"
+      response = result.body
+    end
+
+    # flushes openstanding changes to underlying sqlite3
+    def flush
+      # FIXME: SPARQL flush is not yet implemented
+      # anything here
+      true
+    end
+
 
     private
   # FIXME: Cache not primed for handling res classes!

@@ -7,14 +7,15 @@ module ActiveRDF
     bool_accessor :enabled, :reads, :writes, :new, :contexts
 
     # The following options are accepted
-    #  :write => true | false       # adapter supports writing. default true
+    #  :read => true | false        # adapter supports reading. default true
+    #  :write => true | false       # adapter supports writing. default false
     #  :new => true | false         # create new dataset. default false
     #  :contexts =>  true | false   # adapter supports contexts. default false
     def initialize(params = {})
       # defaults
       @enabled =                               true
-      @reads =                                 true
-      @writes =      truefalse(params[:write], true)
+      @reads =       truefalse(params[:read],  true)
+      @writes =      truefalse(params[:write], false)
       @new =           truefalse(params[:new], false)
       @contexts = truefalse(params[:contexts], false)
     end

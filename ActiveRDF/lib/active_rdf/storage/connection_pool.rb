@@ -80,7 +80,7 @@ module ActiveRDF
         @@adapter_parameters << connection_params
         @@adapter_pool << connection
       else
-        # if adapter parametrs registered already,
+        # if adapter parameters registered already,
         # then adapter must be in the pool, at the same index-position as its parameters
         ActiveRdfLogger::log_debug("Reusing existing adapter")
         connection = @@adapter_pool[index]

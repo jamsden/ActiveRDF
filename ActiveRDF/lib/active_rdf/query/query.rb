@@ -6,7 +6,7 @@ require 'active_rdf/storage/federated_store'
 # Query.new.select(:s).where(:s,:p,:o).
 module ActiveRDF
   class Query
-    attr_reader :select_clauses, :where_clauses, :filter_clauses, :sort_clauses, :limits, :offsets, :keywords, :resource_type
+    attr_reader :select_clauses, :where_clauses, :filter_clauses, :sort_clauses, :limits, :offsets, :keywords
 
     bool_accessor :distinct, :ask, :select, :count, :keyword, :all_types
 
@@ -24,8 +24,7 @@ module ActiveRDF
       @reasoning = nil
       @all_types = false
       @nil_clause_idx = -1
-    # FIXME: set_resource_class(resource_type)
-      @resource_type = resource_type
+      set_resource_class(resource_type)
     end
 
     def initialize_copy(orig)
@@ -37,6 +36,23 @@ module ActiveRDF
             instance_variable_set(iv,orig_val.dup)
         end
       end
+    end
+
+    # This returns the class that is be used for resources, by default this
+    # is RDFS::Resource
+    def resource_class
+      @resource_class ||= RDFS::Resource
+    end
+
+    # Sets the resource_class. Any class may be used, however it is required
+    # that it can be created using the uri of the resource as it's only 
+    # parameter and that it has an 'uri' property
+    def set_resource_class(resource_class)
+      raise(ArgumentError, "resource_class must be a class") unless(resource_class.class == Class)
+
+      test = resource_class.new("http://uri")
+      raise(ArgumentError, "Must have an uri property") unless(test.respond_to?(:uri))
+      @resource_class = resource_class
     end
 
 
